@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreshWave Laundry | Doorstep Laundry, Dry Cleaning & Ironing Services</title>
+  <meta name="description" content="Professional doorstep laundry, dry cleaning, and ironing service. Fast 24-48 hour turnaround, eco-friendly washing, free pickup and delivery.">
+  
+  <!-- Google Fonts & Bootstrap 5.3 & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="top-announcement-bar text-center">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="bi bi-truck me-1"></i> <strong>Free Pickup & Delivery</strong> on orders over ₹500!</span>
+      <div class="d-none d-md-flex align-items-center gap-3">
+        <span><i class="bi bi-clock me-1"></i> Daily 8:00 AM – 9:00 PM</span>
+        <a href="https://wa.me/918080082714" target="_blank" class="text-white text-decoration-none">
+          <i class="bi bi-whatsapp me-1 text-success bg-white rounded-circle p-1" style="font-size: 0.75rem;"></i> +91 8080082714
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg main-navbar">
+    <div class="container">
+      <a class="brand-logo" href="/">
+        <div class="brand-icon"><i class="bi bi-droplet-fill"></i></div>
+        <span>FreshWave <span class="text-primary">Laundry</span></span>
+      </a>
+
+      <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2 py-3 py-lg-0">
+          <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
+          <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+          <li class="nav-item ms-lg-2">
+            <a class="nav-link text-primary fw-bold" href="/tracking.html">
+              <i class="bi bi-geo-alt me-1"></i> Track Order
+            </a>
+          </li>
+          <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+            <a href="/booking.html" class="btn btn-primary-custom">
+              <i class="bi bi-calendar2-check"></i> Book Laundry
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-7">
+          <div class="hero-pill">
+            <i class="bi bi-stars"></i> Premium Doorstep Laundry & Dry Cleaning
+          </div>
+          <h1 class="hero-title">
+            Fresh Clothes.<br><span class="text-primary">Hassle-Free Laundry.</span>
+          </h1>
+          <p class="hero-subtitle">
+            Say goodbye to weekend laundry chores. We pick up dirty garments from your doorstep, hygienically wash, expertly iron, and deliver them fresh, crisp, and ready-to-wear in 24 to 48 hours.
+          </p>
+
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            <a href="/booking.html" class="btn btn-lg btn-primary-custom">
+              <i class="bi bi-bag-plus"></i> Book Laundry Service
+            </a>
+            <a href="#services" class="btn btn-lg btn-outline-custom">
+              <i class="bi bi-grid"></i> View Services
+            </a>
+          </div>
+
+          <div class="row g-3 pt-2">
+            <div class="col-6 col-sm-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-lightning-charge-fill text-warning fs-5"></i>
+                <span class="small fw-semibold">24-48h Delivery</span>
+              </div>
+            </div>
+            <div class="col-6 col-sm-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-droplet-half text-primary fs-5"></i>
+                <span class="small fw-semibold">Eco Detergents</span>
+              </div>
+            </div>
+            <div class="col-6 col-sm-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-truck text-success fs-5"></i>
+                <span class="small fw-semibold">Doorstep Pickup</span>
+              </div>
+            </div>
+            <div class="col-6 col-sm-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-whatsapp text-success fs-5"></i>
+                <span class="small fw-semibold">WhatsApp Updates</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Estimator Hero Card -->
+        <div class="col-lg-5">
+          <div class="hero-card-preview">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0 fw-bold"><i class="bi bi-calculator me-2 text-primary"></i>Quick Price Estimator</h5>
+              <span class="badge bg-primary-subtle text-primary">Instant Estimate</span>
+            </div>
+            <p class="text-muted small mb-3">Estimate your laundry cost before scheduling your free pickup.</p>
+            
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Select Primary Service</label>
+              <select id="est-service" class="form-select">
+                <option value="washing_ironing" selected>Washing + Ironing</option>
+                <option value="washing">Washing Only</option>
+                <option value="dry_cleaning">Dry Cleaning</option>
+                <option value="ironing">Steam Ironing Only</option>
+              </select>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Shirts / Tops</label>
+                <input type="number" id="est-shirts" class="form-control" value="4" min="0" max="100">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Pants / Jeans</label>
+                <input type="number" id="est-pants" class="form-control" value="2" min="0" max="100">
+              </div>
+            </div>
+
+            <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <span class="text-muted small d-block">Estimated Total</span>
+                <span class="text-muted" style="font-size: 0.75rem;">(Includes ₹50 standard delivery)</span>
+              </div>
+              <span id="est-total" class="fs-4 fw-bold text-primary">₹270</span>
+            </div>
+
+            <a href="/booking.html" class="btn btn-primary-custom w-100 justify-content-center">
+              Schedule Pickup Now <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="py-5 bg-white">
+    <div class="container py-4">
+      <div class="section-title-wrap">
+        <span class="section-tag">What We Offer</span>
+        <h2 class="h1 fw-bold mt-1">Professional Laundry Services</h2>
+        <p class="text-muted max-w-600 mx-auto">Configurable garment care tailored for everyday clothes, delicate fabrics, and heavy home textiles.</p>
+      </div>
+
+      <div class="row g-4" id="services-grid">
+        <!-- Dynamically loaded from /api/services, fallback static cards below -->
+        <div class="col-lg-4 col-md-6">
+          <div class="service-card">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="service-icon-box"><i class="bi bi-droplet"></i></div>
+              <span class="badge bg-light text-primary border px-3 py-2 rounded-pill">Daily Care</span>
+            </div>
+            <h4 class="h5 mb-2">Washing</h4>
+            <p class="text-muted small mb-4">Regular gentle wash with eco-friendly detergents and antibacterial softener.</p>
+            <div class="service-price-tag d-flex justify-content-between align-items-center">
+              <div>
+                <span class="text-muted small fw-normal d-block">From</span>
+                <span class="text-dark fw-bold">₹25 / piece</span>
+              </div>
+              <a href="/booking.html?service=Washing" class="btn btn-sm btn-primary-custom">Book Now <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="service-card">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="service-icon-box"><i class="bi bi-stars"></i></div>
+              <span class="badge bg-primary text-white px-3 py-2 rounded-pill">Most Popular</span>
+            </div>
+            <h4 class="h5 mb-2">Washing + Ironing</h4>
+            <p class="text-muted small mb-4">Complete wash followed by crisp steam press and wrinkle-free hangers.</p>
+            <div class="service-price-tag d-flex justify-content-between align-items-center">
+              <div>
+                <span class="text-muted small fw-normal d-block">From</span>
+                <span class="text-dark fw-bold">₹35 / piece</span>
+              </div>
+              <a href="/booking.html?service=Washing%20%2B%20Ironing" class="btn btn-sm btn-primary-custom">Book Now <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="service-card">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="service-icon-box"><i class="bi bi-shield-check"></i></div>
+              <span class="badge bg-light text-primary border px-3 py-2 rounded-pill">Special Care</span>
+            </div>
+            <h4 class="h5 mb-2">Dry Cleaning</h4>
+            <p class="text-muted small mb-4">Expert solvent treatment for suits, sarees, silks, coats, and designer wear.</p>
+            <div class="service-price-tag d-flex justify-content-between align-items-center">
+              <div>
+                <span class="text-muted small fw-normal d-block">From</span>
+                <span class="text-dark fw-bold">₹75 / piece</span>
+              </div>
+              <a href="/booking.html?service=Dry%20Cleaning" class="btn btn-sm btn-primary-custom">Book Now <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="py-5 bg-light">
+    <div class="container py-4">
+      <div class="section-title-wrap">
+        <span class="section-tag">Simple 4-Step Process</span>
+        <h2 class="h1 fw-bold mt-1">How FreshWave Laundry Works</h2>
+        <p class="text-muted">Effortless laundry management from your phone in four simple steps.</p>
+      </div>
+
+      <div class="row g-4 text-center">
+        <div class="col-lg-3 col-sm-6">
+          <div class="p-4 bg-white rounded-4 h-100 shadow-sm border">
+            <div class="step-number-badge mx-auto">1</div>
+            <h5 class="fw-bold mb-2">Book Online</h5>
+            <p class="text-muted small mb-0">Select your items, services, and preferred pickup date/time slot on our quick booking form.</p>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <div class="p-4 bg-white rounded-4 h-100 shadow-sm border">
+            <div class="step-number-badge mx-auto">2</div>
+            <h5 class="fw-bold mb-2">Doorstep Pickup</h5>
+            <p class="text-muted small mb-0">Our friendly pickup agent collects your laundry directly from your doorstep with zero contact.</p>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <div class="p-4 bg-white rounded-4 h-100 shadow-sm border">
+            <div class="step-number-badge mx-auto">3</div>
+            <h5 class="fw-bold mb-2">Hygienic Care</h5>
+            <p class="text-muted small mb-0">Garments are sorted, treated, washed with eco-friendly agents, and crisp steam-ironed.</p>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <div class="p-4 bg-white rounded-4 h-100 shadow-sm border">
+            <div class="step-number-badge mx-auto">4</div>
+            <h5 class="fw-bold mb-2">Fresh Delivery</h5>
+            <p class="text-muted small mb-0">Delivered crisp, neatly folded or hung, back to your home within 24 to 48 hours.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Table Section -->
+  <section id="pricing" class="py-5 bg-white">
+    <div class="container py-4">
+      <div class="section-title-wrap">
+        <span class="section-tag">Transparent Rates</span>
+        <h2 class="h1 fw-bold mt-1">Affordable Laundry Pricing</h2>
+        <p class="text-muted">No hidden charges. Clear, per-piece pricing for all types of garments.</p>
+      </div>
+
+      <div class="table-responsive rounded-4 border shadow-sm">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="py-3 px-4">Garment Item</th>
+              <th>Category</th>
+              <th>Washing Only</th>
+              <th>Washing + Steam Ironing</th>
+              <th>Dry Cleaning</th>
+              <th>Ironing Only</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="px-4 fw-bold"><i class="bi bi-tag me-2 text-primary"></i>Shirt / Top</td>
+              <td>Daily Wear</td>
+              <td>₹25</td>
+              <td class="fw-bold text-primary">₹35</td>
+              <td>₹75</td>
+              <td>₹15</td>
+            </tr>
+            <tr>
+              <td class="px-4 fw-bold"><i class="bi bi-tag me-2 text-primary"></i>T-Shirt</td>
+              <td>Daily Wear</td>
+              <td>₹20</td>
+              <td class="fw-bold text-primary">₹30</td>
+              <td>₹60</td>
+              <td>₹15</td>
+            </tr>
+            <tr>
+              <td class="px-4 fw-bold"><i class="bi bi-tag me-2 text-primary"></i>Pants / Trousers</td>
+              <td>Formal Wear</td>
+              <td>₹30</td>
+              <td class="fw-bold text-primary">₹40</td>
+              <td>₹85</td>
+              <td>₹20</td>
+            </tr>
+            <tr>
+              <td class="px-4 fw-bold"><i class="bi bi-tag me-2 text-primary"></i>Jeans</td>
+              <td>Daily Wear</td>
+              <td>₹35</td>
+              <td class="fw-bold text-primary">₹45</td>
+              <td>₹95</td>
+              <td>₹25</td>
+            </tr>
+            <tr>
+              <td class="px-4 fw-bold"><i class="bi bi-tag me-2 text-primary"></i>Saree (Cotton / Silk)</td>
+              <td>Traditional Wear</td>
+              <td>₹60</td>
+              <td class="fw-bold text-primary">₹90</td>
+              <td>₹160</td>
+              <td>₹40</td>
+            </tr>
+            <tr>
+              <td class="px-4 fw-bold"><i class="bi bi-layers me-2 text-primary"></i>Bedsheet (Single / Double)</td>
+              <td>Household</td>
+              <td>₹60</td>
+              <td class="fw-bold text-primary">₹90</td>
+              <td>₹130</td>
+              <td>₹40</td>
+            </tr>
+            <tr>
+              <td class="px-4 fw-bold"><i class="bi bi-box-seam me-2 text-primary"></i>Blanket / Quilt</td>
+              <td>Heavy Household</td>
+              <td>₹140</td>
+              <td class="fw-bold text-primary">₹180</td>
+              <td>₹250</td>
+              <td>₹50</td>
+            </tr>
+            <tr>
+              <td class="px-4 fw-bold"><i class="bi bi-briefcase me-2 text-primary"></i>Suit (2 Pcs)</td>
+              <td>Formal Wear</td>
+              <td>₹100</td>
+              <td class="fw-bold text-primary">₹160</td>
+              <td>₹280</td>
+              <td>₹70</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="/booking.html" class="btn btn-lg btn-primary-custom px-5">
+          <i class="bi bi-calendar2-check"></i> Book Laundry Service Now
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About & Features Section -->
+  <section id="about" class="py-5 bg-light">
+    <div class="container py-4">
+      <div class="row align-items-center gy-4">
+        <div class="col-lg-6">
+          <span class="section-tag">Why Trust Us</span>
+          <h2 class="h1 fw-bold mt-1 mb-3">Small Business Care with Modern Technology</h2>
+          <p class="text-muted mb-4">
+            We are a dedicated local laundry business committed to treating your garments with the highest standards of cleanliness, hygiene, and fabric longevity. Unlike impersonal factory wash services, each batch is processed separately with individualized care.
+          </p>
+
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex gap-3">
+              <div class="p-2 bg-white rounded-3 border text-primary fs-5"><i class="bi bi-shield-check"></i></div>
+              <div>
+                <h6 class="fw-bold mb-1">Separate Batch Washing</h6>
+                <p class="text-muted small mb-0">Your garments are never mixed with other customers' clothes. 100% individual hygiene guaranteed.</p>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3">
+              <div class="p-2 bg-white rounded-3 border text-primary fs-5"><i class="bi bi-whatsapp"></i></div>
+              <div>
+                <h6 class="fw-bold mb-1">Instant WhatsApp Notifications</h6>
+                <p class="text-muted small mb-0">Receive automated order confirmations, pickup alerts, and delivery updates straight to WhatsApp.</p>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3">
+              <div class="p-2 bg-white rounded-3 border text-primary fs-5"><i class="bi bi-geo-alt"></i></div>
+              <div>
+                <h6 class="fw-bold mb-1">Live Online Order Tracking</h6>
+                <p class="text-muted small mb-0">Track each stage from pickup to steam ironing and delivery anytime on our tracking portal.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="p-4 p-md-5 bg-white rounded-4 shadow-sm border text-center">
+            <i class="bi bi-patch-check-fill text-primary" style="font-size: 3.5rem;"></i>
+            <h3 class="fw-bold mt-3 mb-2">100% Quality & Freshness Guarantee</h3>
+            <p class="text-muted small mb-4">If you are not completely satisfied with the cleanliness or ironing of any garment, we re-wash and re-iron it absolutely free.</p>
+            
+            <div class="row g-3 text-start border-top pt-3">
+              <div class="col-6">
+                <span class="fs-3 fw-bold text-primary">5,000+</span>
+                <span class="small text-muted d-block">Clothes Cleaned Monthly</span>
+              </div>
+              <div class="col-6">
+                <span class="fs-3 fw-bold text-primary">99.8%</span>
+                <span class="small text-muted d-block">On-Time Deliveries</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact & Service Section -->
+  <section id="contact" class="py-5 bg-white">
+    <div class="container py-4">
+      <div class="section-title-wrap">
+        <span class="section-tag">Get in Touch</span>
+        <h2 class="h1 fw-bold mt-1">Contact & Service Area</h2>
+        <p class="text-muted">Have a query or special request? We are available all 7 days a week.</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="p-4 bg-light rounded-4 border h-100 text-center">
+            <div class="service-icon-box mx-auto mb-3"><i class="bi bi-whatsapp"></i></div>
+            <h5 class="fw-bold">Admin WhatsApp</h5>
+            <p class="text-muted small">Direct chat with our operations manager for fast booking support.</p>
+            <a href="https://wa.me/918080082714" target="_blank" class="btn btn-whatsapp">
+              <i class="bi bi-whatsapp"></i> Chat on WhatsApp
+            </a>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-4 bg-light rounded-4 border h-100 text-center">
+            <div class="service-icon-box mx-auto mb-3"><i class="bi bi-telephone"></i></div>
+            <h5 class="fw-bold">Helpline & Calls</h5>
+            <p class="text-muted small">Speak directly to our pickup coordinator.</p>
+            <a href="tel:8080082714" class="btn btn-outline-custom">
+              <i class="bi bi-telephone"></i> Call 8080082714
+            </a>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-4 bg-light rounded-4 border h-100 text-center">
+            <div class="service-icon-box mx-auto mb-3"><i class="bi bi-clock-history"></i></div>
+            <h5 class="fw-bold">Working Hours</h5>
+            <p class="text-muted small mb-1">Monday – Sunday: 8:00 AM – 9:00 PM</p>
+            <p class="text-muted small mb-0">Pickup Slots available every 2 hours.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer-main">
+    <div class="container">
+      <div class="row gy-4 mb-4">
+        <div class="col-lg-4">
+          <div class="brand-logo text-white mb-3">
+            <div class="brand-icon"><i class="bi bi-droplet-fill"></i></div>
+            <span>FreshWave <span class="text-info">Laundry</span></span>
+          </div>
+          <p class="small text-muted">
+            Modern, professional doorstep laundry & dry cleaning service. Hygienic wash, expert steam ironing, and on-time doorstep delivery.
+          </p>
+          <div class="d-flex gap-3">
+            <a href="https://wa.me/918080082714" class="text-white fs-5"><i class="bi bi-whatsapp"></i></a>
+            <a href="tel:8080082714" class="text-white fs-5"><i class="bi bi-telephone"></i></a>
+            <a href="mailto:admin@laundry.com" class="text-white fs-5"><i class="bi bi-envelope"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-6">
+          <h5>Quick Links</h5>
+          <a href="/" class="footer-link">Home</a>
+          <a href="#services" class="footer-link">Services</a>
+          <a href="#pricing" class="footer-link">Pricing</a>
+          <a href="/booking.html" class="footer-link">Book Laundry</a>
+          <a href="/tracking.html" class="footer-link">Track Order</a>
+        </div>
+
+        <div class="col-lg-3 col-6">
+          <h5>Our Services</h5>
+          <a href="/booking.html?service=Washing" class="footer-link">Washing & Tumble Dry</a>
+          <a href="/booking.html?service=Washing%20%2B%20Ironing" class="footer-link">Wash + Steam Ironing</a>
+          <a href="/booking.html?service=Dry%20Cleaning" class="footer-link">Delicate Dry Cleaning</a>
+          <a href="/booking.html?service=Ironing" class="footer-link">Steam Pressing Only</a>
+          <a href="/booking.html?service=Blanket%20Cleaning" class="footer-link">Blanket & Quilt Wash</a>
+        </div>
+
+        <div class="col-lg-3">
+          <h5>Admin & Staff</h5>
+          <p class="small text-muted">Authorized laundry staff and store manager access.</p>
+          <a href="/admin/login.html" class="btn btn-sm btn-outline-light">
+            <i class="bi bi-lock-fill me-1"></i> Admin Portal
+          </a>
+        </div>
+      </div>
+
+      <div class="border-top border-secondary pt-3 text-center small text-muted">
+        <p class="mb-0">© 2026 FreshWave Laundry Services. All Rights Reserved. Built for small business excellence.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

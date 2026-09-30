@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Doorstep Laundry Service | FreshWave Laundry</title>
+  <meta name="description" content="Easy 5-step online booking for doorstep laundry and dry cleaning pickup. Instant WhatsApp order confirmation.">
+  
+  <!-- Fonts & Bootstrap 5.3 & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+
+  <!-- Main Navbar -->
+  <nav class="navbar navbar-expand-lg main-navbar">
+    <div class="container">
+      <a class="brand-logo" href="/">
+        <div class="brand-icon"><i class="bi bi-droplet-fill"></i></div>
+        <span>FreshWave <span class="text-primary">Laundry</span></span>
+      </a>
+
+      <div class="d-flex align-items-center gap-3">
+        <a href="/tracking.html" class="btn btn-sm btn-outline-custom d-none d-sm-inline-flex">
+          <i class="bi bi-geo-alt"></i> Track Order
+        </a>
+        <a href="/" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-house-door"></i> Back Home
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Booking Wizard Main Wrapper -->
+  <div class="container booking-container">
+
+    <!-- Step Progress Indicator -->
+    <div id="booking-wizard-wrapper">
+      <div class="text-center mb-4">
+        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill font-weight-bold">
+          <i class="bi bi-magic me-1"></i> Quick 5-Step Booking
+        </span>
+        <h2 class="h2 fw-bold mt-2">Schedule Your Laundry Pickup</h2>
+        <p class="text-muted small">Fill in your items and preferred time slot. You will receive an instant WhatsApp confirmation.</p>
+      </div>
+
+      <!-- Step Nodes -->
+      <div class="wizard-progress-bar">
+        <div class="wizard-step-node active" id="step-node-1">
+          <div class="wizard-step-circle">1</div>
+          <div class="wizard-step-title">Customer Details</div>
+        </div>
+        <div class="wizard-step-node" id="step-node-2">
+          <div class="wizard-step-circle">2</div>
+          <div class="wizard-step-title">Laundry Items</div>
+        </div>
+        <div class="wizard-step-node" id="step-node-3">
+          <div class="wizard-step-circle">3</div>
+          <div class="wizard-step-title">Services & Pricing</div>
+        </div>
+        <div class="wizard-step-node" id="step-node-4">
+          <div class="wizard-step-circle">4</div>
+          <div class="wizard-step-title">Pickup & Delivery</div>
+        </div>
+        <div class="wizard-step-node" id="step-node-5">
+          <div class="wizard-step-circle">5</div>
+          <div class="wizard-step-title">Review & Confirm</div>
+        </div>
+      </div>
+
+      <!-- Error Alert Box -->
+      <div id="step-error-alert" class="alert alert-danger py-2 px-3 small d-none mb-4" role="alert"></div>
+
+      <div class="row g-4">
+        <!-- Main Form Area -->
+        <div class="col-lg-8">
+          <div class="booking-card">
+
+            <!-- STEP 1: Customer Details -->
+            <div id="step-panel-1">
+              <h4 class="h5 fw-bold text-primary mb-3">
+                <i class="bi bi-person-lines-fill me-2"></i>Step 1 — Customer & Contact Information
+              </h4>
+              <p class="text-muted small mb-4">
+                Please enter your contact and address details. Your WhatsApp number will receive real-time booking and pickup updates.
+              </p>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Full Name <span class="text-danger">*</span></label>
+                  <input type="text" id="cust-name" class="form-control" placeholder="e.g. Yuvraj Shinde" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Mobile Number <span class="text-danger">*</span></label>
+                  <input type="tel" id="cust-phone" class="form-control" placeholder="10-digit mobile number" maxlength="10" required>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <label class="form-label small fw-semibold">WhatsApp Number <span class="text-danger">*</span></label>
+                    <div class="form-check form-check-inline small">
+                      <input class="form-check-input" type="checkbox" id="same-as-phone">
+                      <label class="form-check-label text-muted" for="same-as-phone" style="font-size: 0.78rem;">Same as Phone</label>
+                    </div>
+                  </div>
+                  <input type="tel" id="cust-whatsapp" class="form-control" placeholder="WhatsApp number for updates" maxlength="10" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Email Address <span class="text-muted fw-normal">(Optional)</span></label>
+                  <input type="email" id="cust-email" class="form-control" placeholder="name@example.com">
+                </div>
+                <div class="col-12">
+                  <label class="form-label small fw-semibold">Complete Pickup Address <span class="text-danger">*</span></label>
+                  <textarea id="cust-address" class="form-control" rows="2" placeholder="Flat / House No., Building Name, Street / Landmark" required></textarea>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold">Area / Locality</label>
+                  <input type="text" id="cust-area" class="form-control" placeholder="e.g. Bandra West">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold">City <span class="text-danger">*</span></label>
+                  <input type="text" id="cust-city" class="form-control" value="Mumbai" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small fw-semibold">Pincode <span class="text-danger">*</span></label>
+                  <input type="text" id="cust-pincode" class="form-control" placeholder="6-digit PIN" maxlength="6" required>
+                </div>
+              </div>
+
+              <div class="alert alert-info py-2 px-3 mt-4 small d-flex align-items-center">
+                <i class="bi bi-shield-check fs-5 me-2 text-primary"></i>
+                <div>Your phone and WhatsApp number will strictly be used for laundry updates. No spam.</div>
+              </div>
+
+              <div class="d-flex justify-content-end mt-4">
+                <button type="button" class="btn btn-primary-custom" onclick="goToStep(2)">
+                  Continue to Laundry Items <i class="bi bi-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 2: Laundry Items Selection -->
+            <div id="step-panel-2" class="d-none">
+              <h4 class="h5 fw-bold text-primary mb-3">
+                <i class="bi bi-basket3 me-2"></i>Step 2 — Select Laundry Items & Quantities
+              </h4>
+              <p class="text-muted small mb-4">
+                Select the estimated number of garments for pickup. Quantities can also be adjusted by our pickup executive upon collection.
+              </p>
+
+              <div id="laundry-items-container">
+                <!-- Dynamically filled with items cards and +/- steppers -->
+              </div>
+
+              <div class="mt-4">
+                <label class="form-label small fw-semibold">Special Instructions for Garment Care <span class="text-muted fw-normal">(Optional)</span></label>
+                <textarea id="special-instructions" class="form-control" rows="2" placeholder="e.g. Please wash whites separately, handle delicate saree gently, extra steam on cotton shirts."></textarea>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary" onclick="goToStep(1)">
+                  <i class="bi bi-arrow-left"></i> Back to Details
+                </button>
+                <button type="button" class="btn btn-primary-custom" onclick="goToStep(3)">
+                  Continue to Services & Pricing <i class="bi bi-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 3: Service Selection & Dynamic Price Calculation -->
+            <div id="step-panel-3" class="d-none">
+              <h4 class="h5 fw-bold text-primary mb-3">
+                <i class="bi bi-sliders me-2"></i>Step 3 — Service Selection & Itemized Pricing
+              </h4>
+              <p class="text-muted small mb-3">
+                Choose the service treatment for your garments. You can apply a service to all items or customize each garment individually.
+              </p>
+
+              <div class="p-3 bg-light rounded-3 mb-4 border">
+                <label class="form-label small fw-bold">Quick Apply Service to All Items:</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-sm btn-outline-primary" onclick="applyGlobalService('Washing')">Washing Only</button>
+                  <button type="button" class="btn btn-sm btn-primary-custom" onclick="applyGlobalService('Washing + Ironing')">Washing + Ironing (Recommended)</button>
+                  <button type="button" class="btn btn-sm btn-outline-primary" onclick="applyGlobalService('Dry Cleaning')">Dry Cleaning</button>
+                  <button type="button" class="btn btn-sm btn-outline-primary" onclick="applyGlobalService('Ironing')">Steam Ironing Only</button>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                  <thead class="table-light small">
+                    <tr>
+                      <th>Garment</th>
+                      <th class="text-center">Qty</th>
+                      <th>Selected Service</th>
+                      <th class="text-end">Item Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="service-item-customization-tbody">
+                    <!-- Dynamically populated per item -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Promo Code Input -->
+              <div class="row g-2 align-items-center mt-3">
+                <div class="col-sm-8">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-ticket-perforated"></i></span>
+                    <input type="text" id="coupon-input" class="form-control" placeholder="Promo code (e.g. FRESH10 or WELCOME50)">
+                    <button type="button" class="btn btn-outline-primary" onclick="applyCoupon()">Apply Coupon</button>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div id="coupon-alert" class="d-none"></div>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary" onclick="goToStep(2)">
+                  <i class="bi bi-arrow-left"></i> Back to Items
+                </button>
+                <button type="button" class="btn btn-primary-custom" onclick="goToStep(4)">
+                  Continue to Schedule Pickup <i class="bi bi-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 4: Pickup & Delivery Scheduling -->
+            <div id="step-panel-4" class="d-none">
+              <h4 class="h5 fw-bold text-primary mb-3">
+                <i class="bi bi-calendar-check me-2"></i>Step 4 — Select Pickup & Delivery Slots
+              </h4>
+              <p class="text-muted small mb-4">
+                Select your convenient date and time window. Our pickup executive will arrive during this slot.
+              </p>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Pickup Date <span class="text-danger">*</span></label>
+                  <input type="date" id="pickup-date" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Pickup Time Window <span class="text-danger">*</span></label>
+                  <select id="pickup-slot" class="form-select">
+                    <option value="9:00 AM – 11:00 AM">9:00 AM – 11:00 AM (Morning)</option>
+                    <option value="11:00 AM – 1:00 PM" selected>11:00 AM – 1:00 PM (Noon)</option>
+                    <option value="2:00 PM – 4:00 PM">2:00 PM – 4:00 PM (Afternoon)</option>
+                    <option value="4:00 PM – 6:00 PM">4:00 PM – 6:00 PM (Evening)</option>
+                    <option value="6:00 PM – 8:00 PM">6:00 PM – 8:00 PM (Night)</option>
+                  </select>
+                </div>
+              </div>
+
+              <h6 class="fw-bold mt-4 mb-3 text-secondary">Delivery Preference</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="p-3 border rounded-3 cursor-pointer border-primary bg-light" id="delivery-opt-standard" onclick="setDeliveryPreference('Standard')">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <strong class="text-primary"><i class="bi bi-truck me-1"></i> Standard Delivery</strong>
+                      <span class="badge bg-secondary">Within 48 Hours</span>
+                    </div>
+                    <p class="small text-muted mb-0">Hygienic standard washing, steam pressing, and standard 48-hour delivery.</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 border rounded-3 cursor-pointer" id="delivery-opt-express" onclick="setDeliveryPreference('Express')">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <strong class="text-warning"><i class="bi bi-lightning-charge-fill me-1"></i> Express 24h Delivery</strong>
+                      <span class="badge bg-warning text-dark">+ ₹100 Charge</span>
+                    </div>
+                    <p class="small text-muted mb-0">Priority processing delivered back fresh within 24 hours guaranteed.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary" onclick="goToStep(3)">
+                  <i class="bi bi-arrow-left"></i> Back to Services
+                </button>
+                <button type="button" class="btn btn-primary-custom" onclick="goToStep(5)">
+                  Continue to Order Review <i class="bi bi-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 5: Review & Confirm -->
+            <div id="step-panel-5" class="d-none">
+              <h4 class="h5 fw-bold text-primary mb-3">
+                <i class="bi bi-check2-circle me-2"></i>Step 5 — Review & Confirm Your Booking
+              </h4>
+              <p class="text-muted small mb-4">
+                Please verify your details below. Once confirmed, your unique Order ID will be generated and sent to your WhatsApp.
+              </p>
+
+              <!-- Dynamic Review Details -->
+              <div id="review-summary-content">
+                <!-- Injected by booking.js -->
+              </div>
+
+              <div class="form-check mt-4">
+                <input class="form-check-input" type="checkbox" id="agree-terms" checked>
+                <label class="form-check-label small text-muted" for="agree-terms">
+                  I agree that payment can be made via Cash, UPI, or QR code upon delivery after inspection.
+                </label>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary" onclick="goToStep(4)">
+                  <i class="bi bi-arrow-left"></i> Back to Schedule
+                </button>
+                <button type="button" id="btn-submit-booking" class="btn btn-lg btn-primary-custom" onclick="confirmBookingOrder()">
+                  <span id="btn-submit-spinner" class="spinner-border spinner-border-sm d-none me-2"></span>
+                  <span id="btn-submit-text"><i class="bi bi-check-circle-fill me-1"></i> Confirm Laundry Booking</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sticky Live Order Financial Summary Sidebar -->
+        <div class="col-lg-4">
+          <div class="order-summary-box sticky-top" style="top: 85px;">
+            <h5 class="fw-bold mb-3 d-flex justify-content-between align-items-center">
+              <span><i class="bi bi-receipt me-2 text-primary"></i>Live Order Summary</span>
+              <span class="badge bg-primary rounded-pill"><span class="summary-pieces-val">0</span> items</span>
+            </h5>
+
+            <div class="summary-row">
+              <span class="text-muted">Garments Subtotal:</span>
+              <span class="fw-semibold summary-subtotal-val">₹0</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="text-muted">Pickup & Delivery:</span>
+              <span class="fw-semibold summary-delivery-val">₹50</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="text-muted">Express Delivery:</span>
+              <span class="fw-semibold summary-express-val">₹0</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="text-muted">Discount Promo:</span>
+              <span class="fw-semibold text-success summary-discount-val">₹0</span>
+            </div>
+
+            <div id="free-delivery-qualify-note" class="my-2 small"></div>
+
+            <div class="summary-row total">
+              <span>Grand Total:</span>
+              <span class="summary-grandtotal-val">₹0</span>
+            </div>
+
+            <div class="p-2 bg-white rounded border mt-3 text-center small text-muted">
+              <i class="bi bi-wallet2 text-primary me-1"></i> Pay with Cash / UPI on Delivery
+            </div>
+
+            <div class="mt-3 text-center">
+              <span class="small text-muted d-block mb-1">Need help with your order?</span>
+              <a href="https://wa.me/918080082714" target="_blank" class="text-decoration-none small text-success fw-bold">
+                <i class="bi bi-whatsapp me-1"></i> Chat with Laundry Admin
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Confirmation / Success View -->
+    <div id="booking-success-wrapper" class="d-none">
+      <div class="p-4 p-md-5 bg-white rounded-4 shadow-sm border text-center max-w-700 mx-auto">
+        <div class="mb-3">
+          <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+        </div>
+        <h2 class="h2 fw-bold mb-1 text-success">Booking Successful!</h2>
+        <p class="text-muted mb-4">Your laundry pickup has been scheduled and safely stored in our system.</p>
+
+        <!-- Order ID Highlight Card -->
+        <div class="p-4 bg-light rounded-4 border mb-4 text-start">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <span class="text-muted small d-block">Your Unique Order ID</span>
+              <h4 class="fw-bold text-primary mb-0" id="conf-order-id">LAUNDRY-20260821-00001</h4>
+            </div>
+            <button class="btn btn-sm btn-outline-primary" onclick="copyOrderId()" title="Copy Order ID">
+              <i class="bi bi-clipboard me-1"></i> Copy
+            </button>
+          </div>
+
+          <div class="row g-2 small border-top pt-3">
+            <div class="col-6">
+              <span class="text-muted">Customer:</span>
+              <span class="fw-bold d-block" id="conf-customer-name">Customer</span>
+            </div>
+            <div class="col-6">
+              <span class="text-muted">Status:</span>
+              <span class="badge bg-primary text-white d-inline-block" id="conf-status">Booking Confirmed</span>
+            </div>
+            <div class="col-6">
+              <span class="text-muted">Pickup Date:</span>
+              <span class="fw-bold d-block" id="conf-pickup-date">Today</span>
+            </div>
+            <div class="col-6">
+              <span class="text-muted">Pickup Time:</span>
+              <span class="fw-bold d-block" id="conf-pickup-time">10:00 AM – 12:00 PM</span>
+            </div>
+            <div class="col-12 mt-2 pt-2 border-top">
+              <div class="d-flex justify-content-between fs-6">
+                <span class="fw-bold">Total Amount:</span>
+                <span class="fw-bold text-primary fs-5" id="conf-total-amount">₹420</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WhatsApp Notification Notice -->
+        <div class="alert alert-success d-flex align-items-center text-start mb-4">
+          <i class="bi bi-whatsapp fs-3 text-success me-3"></i>
+          <div>
+            <h6 class="mb-1 fw-bold">WhatsApp Alert Sent!</h6>
+            <p class="mb-0 small">Confirmation details have been routed to your phone number and the Laundry Admin (+91 8080082714).</p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+          <a id="conf-whatsapp-btn" href="https://wa.me/918080082714" target="_blank" class="btn btn-whatsapp">
+            <i class="bi bi-whatsapp"></i> Open WhatsApp Confirmation
+          </a>
+          <a id="conf-track-btn" href="/tracking.html" class="btn btn-primary-custom">
+            <i class="bi bi-geo-alt"></i> Track Order Status
+          </a>
+          <button class="btn btn-outline-secondary" onclick="window.print()">
+            <i class="bi bi-printer"></i> Print Receipt
+          </button>
+          <a href="/booking.html" class="btn btn-outline-custom">
+            <i class="bi bi-plus-circle"></i> Book Another
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer-main mt-5">
+    <div class="container text-center small text-muted">
+      <p class="mb-0">© 2026 FreshWave Laundry Services • WhatsApp: +91 8080082714 • Clean, Trusted, On-Time Doorstep Service</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/booking.js"></script>
+</body>
+</html>

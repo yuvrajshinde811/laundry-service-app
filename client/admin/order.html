@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Print Order Invoice & Job Sheet | FreshWave Laundry</title>
+  
+  <!-- Bootstrap 5.3 & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="bg-light py-4">
+
+  <div class="container" style="max-width: 800px;">
+    
+    <!-- Action Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+      <a href="/admin/dashboard.html" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+      </a>
+      <button class="btn btn-sm btn-primary-custom" onclick="window.print()">
+        <i class="bi bi-printer"></i> Print Invoice
+      </button>
+    </div>
+
+    <!-- Printable Invoice Sheet -->
+    <div class="booking-card bg-white shadow-sm border p-4 p-md-5 printable-invoice">
+      
+      <!-- Invoice Header -->
+      <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+        <div>
+          <div class="brand-logo fs-4 mb-1">
+            <div class="brand-icon" style="width: 36px; height: 36px;"><i class="bi bi-droplet-fill"></i></div>
+            <span>FreshWave <span class="text-primary">Laundry</span></span>
+          </div>
+          <p class="text-muted small mb-0">
+            Professional Laundry & Dry Cleaning Services<br>
+            Helpline / WhatsApp: +91 8080082714 • Email: admin@laundry.com
+          </p>
+        </div>
+        <div class="text-end">
+          <span class="badge bg-primary text-white px-3 py-2 fs-6 rounded-pill mb-2">TAX INVOICE / JOB SHEET</span>
+          <div class="fw-bold text-secondary" id="inv-order-id">LAUNDRY-20260821-00125</div>
+          <div class="small text-muted" id="inv-created-at">Date: 21 Aug 2026</div>
+        </div>
+      </div>
+
+      <!-- Customer & Logistics Details Grid -->
+      <div class="row g-4 mb-4">
+        <div class="col-6">
+          <h6 class="fw-bold text-primary mb-2">Customer Details:</h6>
+          <strong class="d-block" id="inv-cust-name">Customer Name</strong>
+          <div class="small text-muted" id="inv-cust-phone">Phone: 9876543210</div>
+          <div class="small text-muted" id="inv-cust-wa">WhatsApp: 9876543210</div>
+          <div class="small text-muted mt-1" id="inv-cust-address">Address: Customer Address</div>
+        </div>
+        <div class="col-6">
+          <h6 class="fw-bold text-primary mb-2">Service Logistics:</h6>
+          <div class="small mb-1"><strong>Pickup Date:</strong> <span id="inv-pickup-date">21 Aug 2026</span></div>
+          <div class="small mb-1"><strong>Pickup Window:</strong> <span id="inv-pickup-time">10:00 AM - 12:00 PM</span></div>
+          <div class="small mb-1"><strong>Delivery Preference:</strong> <span id="inv-delivery-pref">Standard Delivery</span></div>
+          <div class="small mb-1"><strong>Current Status:</strong> <span id="inv-status" class="fw-bold text-success">Booking Confirmed</span></div>
+        </div>
+      </div>
+
+      <!-- Customer Instructions -->
+      <div class="p-3 bg-light rounded border mb-4 small" id="inv-instructions-box">
+        <strong>Special Handling Instructions:</strong>
+        <span id="inv-instructions" class="fst-italic text-muted">None</span>
+      </div>
+
+      <!-- Items Table -->
+      <div class="table-responsive mb-4">
+        <table class="table table-bordered align-middle mb-0">
+          <thead class="table-light small">
+            <tr>
+              <th>#</th>
+              <th>Garment Description</th>
+              <th>Service Required</th>
+              <th class="text-center">Quantity</th>
+              <th class="text-end">Unit Price</th>
+              <th class="text-end">Item Total</th>
+            </tr>
+          </thead>
+          <tbody id="inv-items-tbody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Financial Totals -->
+      <div class="row justify-content-end mb-4">
+        <div class="col-md-6">
+          <div class="p-3 bg-light rounded border small">
+            <div class="d-flex justify-content-between mb-1"><span>Subtotal:</span><span id="inv-subtotal">₹0</span></div>
+            <div class="d-flex justify-content-between mb-1"><span>Pickup & Delivery Charge:</span><span id="inv-delivery">₹50</span></div>
+            <div class="d-flex justify-content-between mb-1"><span>Express Charge:</span><span id="inv-express">₹0</span></div>
+            <div class="d-flex justify-content-between mb-1 text-success"><span>Discount:</span><span id="inv-discount">-₹0</span></div>
+            <div class="d-flex justify-content-between fs-5 fw-bold text-primary border-top pt-2 mt-2">
+              <span>Total Amount Payable:</span>
+              <span id="inv-grand-total">₹0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer / Terms -->
+      <div class="border-top pt-3 text-center small text-muted">
+        <p class="mb-1">Thank you for choosing FreshWave Laundry Services!</p>
+        <p class="mb-0" style="font-size: 0.75rem;">Payment accepted via Cash / UPI on Delivery. For queries or re-washing requests, WhatsApp +91 8080082714.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderId = urlParams.get('id');
+
+      if (!orderId) {
+        alert('No Order ID specified in URL.');
+        return;
+      }
+
+      const token = localStorage.getItem('adminToken');
+
+      try {
+        const res = await fetch(`/api/orders/${orderId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+
+        const data = await res.json();
+        if (!data.success || !data.order) {
+          throw new Error(data.message || 'Order not found.');
+        }
+
+        const order = data.order;
+        const cust = order.customerSnapshot;
+
+        document.getElementById('inv-order-id').textContent = order.orderId;
+        document.getElementById('inv-created-at').textContent = `Date: ${new Date(order.createdAt).toLocaleDateString()}`;
+        
+        document.getElementById('inv-cust-name').textContent = cust.name;
+        document.getElementById('inv-cust-phone').textContent = `Phone: ${cust.phone}`;
+        document.getElementById('inv-cust-wa').textContent = `WhatsApp: ${cust.whatsappNumber}`;
+        document.getElementById('inv-cust-address').textContent = `Address: ${cust.address}, ${cust.area || ''}, ${cust.city} - ${cust.pincode}`;
+
+        document.getElementById('inv-pickup-date').textContent = order.pickupDate;
+        document.getElementById('inv-pickup-time').textContent = order.pickupTimeSlot;
+        document.getElementById('inv-delivery-pref').textContent = `${order.deliveryPreference} Delivery`;
+        document.getElementById('inv-status').textContent = order.status;
+
+        document.getElementById('inv-instructions').textContent = order.additionalInstructions || 'None provided';
+
+        // Render Items
+        const tbody = document.getElementById('inv-items-tbody');
+        tbody.innerHTML = '';
+        order.items.forEach((it, idx) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td><strong>${it.item}</strong></td>
+            <td>${it.service}</td>
+            <td class="text-center">${it.quantity}</td>
+            <td class="text-end">₹${it.unitPrice}</td>
+            <td class="text-end fw-bold">₹${it.itemTotal}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById('inv-subtotal').textContent = `₹${order.subtotal}`;
+        document.getElementById('inv-delivery').textContent = order.deliveryCharge === 0 ? 'FREE' : `₹${order.deliveryCharge}`;
+        document.getElementById('inv-express').textContent = `₹${order.expressCharge || 0}`;
+        document.getElementById('inv-discount').textContent = `-₹${order.discount || 0}`;
+        document.getElementById('inv-grand-total').textContent = `₹${order.totalAmount}`;
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+  </script>
+</body>
+</html>
