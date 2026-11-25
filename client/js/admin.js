@@ -89,20 +89,33 @@ async function loadStats() {
   }
 }
 
-// Fetch & render orders table with filters
-async function loadOrders(searchQuery = '') {
+// Escape HTML helper to avoid rendering glitches on user strings
+function escapeAdminHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text == null ? '' : String(text);
+  return div.innerHTML;
+}
+
+// Fetch & render ALL orders matching active filters (no hidden truncation limit)
+async function loadOrders(searchQuery = null) {
   const tbody = document.getElementById('admin-orders-tbody');
   if (!tbody) return;
 
   const activeTab = document.querySelector('.admin-status-tab.active')?.dataset.status || 'All';
   const dateFilter = document.getElementById('admin-date-filter')?.value || '';
+  const currentSearch =
+    typeof searchQuery === 'string'
+      ? searchQuery
+      : (document.getElementById('admin-order-search')?.value.trim() || '');
 
-  let url = `/api/admin/orders?limit=50&status=${encodeURIComponent(activeTab)}`;
-  if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
+  let url = `/api/admin/orders?limit=all&status=${encodeURIComponent(activeTab)}`;
+  if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
   if (dateFilter) url += `&date=${encodeURIComponent(dateFilter)}`;
 
+  const countBadge = document.getElementById('admin-orders-count');
+
   try {
-    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted"><span class="spinner-border spinner-border-sm me-2"></span>Loading orders...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted"><span class="spinner-border spinner-border-sm me-2"></span>Loading orders...</td></tr>`;
 
     const res = await fetch(url, {
       headers: {
@@ -117,33 +130,44 @@ async function loadOrders(searchQuery = '') {
 
     const data = await res.json();
 
-    if (!data.success || !data.orders || data.orders.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">No orders found matching criteria.</td></tr>`;
+    if (!data.success || !Array.isArray(data.orders) || data.orders.length === 0) {
+      if (countBadge) countBadge.textContent = '0 orders';
+      tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">No orders found matching criteria.</td></tr>`;
       return;
     }
 
     cachedOrders = data.orders;
+    if (countBadge) {
+      const totalCount = data.pagination?.totalOrders ?? data.orders.length;
+      countBadge.textContent = `${totalCount} ${totalCount === 1 ? 'order' : 'orders'}`;
+    }
     tbody.innerHTML = '';
 
     data.orders.forEach((order) => {
       const row = document.createElement('tr');
-      const itemsCount = order.items.reduce((acc, it) => acc + it.quantity, 0);
+      const itemsList = Array.isArray(order.items) ? order.items : [];
+      const itemsCount = itemsList.reduce((acc, it) => acc + (Number(it.quantity) || 1), 0);
+      const custName = order.customerSnapshot?.name || 'Customer';
+      const custCity = order.customerSnapshot?.city || 'Mumbai';
       const custPhone = order.customerSnapshot?.phone || 'N/A';
       const custWa = order.customerSnapshot?.whatsappNumber || custPhone;
-      
-      const cleanWa = custWa.replace(/\D/g, '');
-      const waLink = `https://wa.me/${cleanWa.length === 10 ? '91' + cleanWa : cleanWa}?text=${encodeURIComponent(`Hello ${order.customerSnapshot?.name}, this is regarding your Laundry Order #${order.orderId}.`)}`;
+      const orderLookupId = order._id || order.orderId;
 
-      const statusBadgeClass = `badge-status badge-${order.status.toLowerCase().replace(/\s+/g, '')}`;
+      const cleanWa = String(custWa).replace(/\D/g, '');
+      const waLink = `https://wa.me/${cleanWa.length === 10 ? '91' + cleanWa : cleanWa}?text=${encodeURIComponent(`Hello ${custName}, this is regarding your Laundry Order #${order.orderId}.`)}`;
+
+      const statusText = order.status || 'Pending';
+      const statusBadgeClass = `badge-status badge-${statusText.toLowerCase().replace(/\s+/g, '')}`;
+      const deliveryPref = order.deliveryPreference || 'Standard';
 
       row.innerHTML = `
-        <td class="fw-bold text-primary">${order.orderId}</td>
+        <td class="fw-bold text-primary">${escapeAdminHtml(order.orderId)}</td>
         <td>
-          <div class="fw-bold">${order.customerSnapshot?.name || 'Customer'}</div>
-          <div class="small text-muted">${order.customerSnapshot?.city || 'Mumbai'}</div>
+          <div class="fw-bold">${escapeAdminHtml(custName)}</div>
+          <div class="small text-muted">${escapeAdminHtml(custCity)}</div>
         </td>
         <td>
-          <a href="tel:${custPhone}" class="text-dark d-block small">${custPhone}</a>
+          <a href="tel:${escapeAdminHtml(custPhone)}" class="text-dark d-block small">${escapeAdminHtml(custPhone)}</a>
           <a href="${waLink}" target="_blank" class="btn btn-sm btn-whatsapp mt-1 py-0 px-2" style="font-size: 0.75rem;">
             <i class="bi bi-whatsapp"></i> Chat
           </a>
@@ -151,31 +175,31 @@ async function loadOrders(searchQuery = '') {
         <td>
           <span class="badge bg-light text-dark border">${itemsCount} pcs</span>
           <div class="small text-muted text-truncate" style="max-width: 140px;">
-            ${order.items.map(i => `${i.item} × ${i.quantity}`).join(', ')}
+            ${escapeAdminHtml(itemsList.map((i) => `${i.item} × ${i.quantity}`).join(', ') || 'No items')}
           </div>
         </td>
         <td>
-          <div class="small fw-bold">${order.pickupDate}</div>
-          <div class="small text-muted">${order.pickupTimeSlot}</div>
+          <div class="small fw-bold">${escapeAdminHtml(order.pickupDate || 'N/A')}</div>
+          <div class="small text-muted">${escapeAdminHtml(order.pickupTimeSlot || '')}</div>
         </td>
         <td>
-          <span class="badge ${order.deliveryPreference === 'Express' ? 'bg-warning text-dark' : 'bg-secondary text-white'}">
-            ${order.deliveryPreference}
+          <span class="badge ${deliveryPref === 'Express' ? 'bg-warning text-dark' : 'bg-secondary text-white'}">
+            ${escapeAdminHtml(deliveryPref)}
           </span>
         </td>
-        <td class="fw-bold text-dark">₹${order.totalAmount}</td>
+        <td class="fw-bold text-dark">₹${Number(order.totalAmount) || 0}</td>
         <td>
-          <span class="${statusBadgeClass}">${order.status}</span>
+          <span class="${statusBadgeClass}">${escapeAdminHtml(statusText)}</span>
         </td>
         <td>
           <div class="btn-group btn-group-sm">
-            <button class="btn btn-outline-primary" onclick="viewOrderModal('${order._id}')" title="View Full Details">
+            <button class="btn btn-outline-primary" onclick="viewOrderModal('${escapeAdminHtml(orderLookupId)}')" title="View Full Details">
               <i class="bi bi-eye"></i>
             </button>
-            <button class="btn btn-outline-success" onclick="openStatusModal('${order._id}', '${order.status}')" title="Update Status">
+            <button class="btn btn-outline-success" onclick="openStatusModal('${escapeAdminHtml(orderLookupId)}', '${escapeAdminHtml(statusText)}')" title="Update Status">
               <i class="bi bi-pencil-square"></i>
             </button>
-            <a href="/admin/order.html?id=${order._id}" target="_blank" class="btn btn-outline-secondary" title="Print Invoice">
+            <a href="/admin/order.html?id=${encodeURIComponent(order.orderId)}" target="_blank" class="btn btn-outline-secondary" title="Print Invoice">
               <i class="bi bi-printer"></i>
             </a>
           </div>
@@ -185,9 +209,21 @@ async function loadOrders(searchQuery = '') {
     });
   } catch (err) {
     console.error('Orders query failed:', err);
-    tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger py-4">Failed to load orders.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger py-4">Failed to load orders.</td></tr>`;
   }
 }
+
+// Reset all filters and show every order
+window.clearAdminFilters = function () {
+  const searchEl = document.getElementById('admin-order-search');
+  const dateEl = document.getElementById('admin-date-filter');
+  if (searchEl) searchEl.value = '';
+  if (dateEl) dateEl.value = '';
+  document.querySelectorAll('.admin-status-tab').forEach((tab) => {
+    tab.classList.toggle('active', tab.dataset.status === 'All');
+  });
+  loadOrders('');
+};
 
 // Filter orders by status tabs
 window.filterStatus = function (statusName, element) {

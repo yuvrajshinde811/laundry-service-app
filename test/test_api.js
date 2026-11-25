@@ -3,6 +3,10 @@
  */
 
 const http = require('http');
+const mongoose = require('mongoose');
+process.env.NODE_ENV = 'test';
+process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/laundry_service_test';
+const { connectDB, isUsingMemoryStore } = require('../server/config/database');
 const app = require('../server/server');
 
 let server;
@@ -63,9 +67,10 @@ async function runTests() {
     }
   }
 
-  // Start test server
+  // Connect to isolated test DB (or fallback memoryStore if MongoDB is off) & start test server
+  await connectDB();
   server = app.listen(port);
-  await new Promise((r) => setTimeout(r, 1000));
+  await new Promise((r) => setTimeout(r, 500));
 
   try {
     // 1. Health Check
@@ -295,6 +300,57 @@ async function runTests() {
     });
     assert(emptyActionConfirm.status === 400, 'Rejects confirm-action when no pending modification exists');
 
+    // 13. Repeat-Customer MongoDB Persistence & Unlimited Admin Orders Fetch (>25 orders, mixed statuses)
+    console.log('\nTest Suite 13: Repeat Customers & All-Orders Admin Retrieval');
+    const createdBatchIds = [];
+    for (let i = 0; i < 28; i++) {
+      // Reuse same phone numbers repeatedly to verify Customer.findOneAndUpdate never fails on immutable _id
+      const repeatPhone = i % 2 === 0 ? '9876543210' : '9988776655';
+      const resp = await makeRequest('POST', '/api/orders', {
+        name: i % 2 === 0 ? 'Yuvraj Shinde' : 'Aarav Patel',
+        phone: repeatPhone,
+        whatsappNumber: repeatPhone,
+        address: 'Batch Test Street ' + i,
+        city: 'Mumbai',
+        pincode: '400050',
+        items: [{ item: 'Shirt', quantity: 2, service: 'Washing + Ironing' }],
+        pickupDate: '2026-11-26',
+        pickupTimeSlot: '11:00 AM – 1:00 PM',
+        deliveryPreference: 'Standard'
+      });
+      if (resp.status === 201 && resp.data.orderId) {
+        createdBatchIds.push(resp.data.orderId);
+      }
+    }
+    assert(createdBatchIds.length === 28, `Created 28 repeat-customer bookings cleanly (${createdBatchIds.length}/28)`);
+
+    // Update a couple of orders to different statuses (Delivered, Cancelled, Washing)
+    await makeRequest('PATCH', `/api/admin/orders/${createdBatchIds[0]}/status`, { status: 'Delivered', sendCustomerWhatsApp: false }, { Authorization: `Bearer ${adminToken}` });
+    await makeRequest('PATCH', `/api/admin/orders/${createdBatchIds[1]}/status`, { status: 'Cancelled', sendCustomerWhatsApp: false }, { Authorization: `Bearer ${adminToken}` });
+    await makeRequest('PATCH', `/api/admin/orders/${createdBatchIds[2]}/status`, { status: 'Washing', sendCustomerWhatsApp: false }, { Authorization: `Bearer ${adminToken}` });
+
+    // Fetch ALL orders via Admin API without limit truncation (should return all 30 orders: 2 prior + 28 batch)
+    const allAdminOrders = await makeRequest('GET', '/api/admin/orders?status=All', null, {
+      Authorization: `Bearer ${adminToken}`
+    });
+    assert(allAdminOrders.status === 200 && allAdminOrders.data.orders.length >= 30, `GET /api/admin/orders?status=All fetches ALL orders without 25-item cap (${allAdminOrders.data.orders?.length})`);
+
+    const allLowercase = await makeRequest('GET', '/api/admin/orders?limit=all&status=all', null, {
+      Authorization: `Bearer ${adminToken}`
+    });
+    assert(allLowercase.status === 200 && allLowercase.data.orders.length === allAdminOrders.data.orders.length, 'Case-insensitive status=all returns identical full order set');
+
+    // Verify both Delivered and Cancelled orders appear in All Orders AND tracking works for all batch orders
+    const returnedIds = new Set(allAdminOrders.data.orders.map((o) => o.orderId));
+    const missingFromAdmin = createdBatchIds.filter((id) => !returnedIds.has(id));
+    assert(missingFromAdmin.length === 0, 'Every created repeat-customer order across all statuses appears in Admin Orders');
+
+    const trackDelivered = await makeRequest('POST', '/api/orders/track', {
+      orderId: createdBatchIds[0],
+      phone: '9876543210'
+    });
+    assert(trackDelivered.status === 200 && trackDelivered.data.order.status === 'Delivered', 'Tracking still works for repeat-customer Delivered order');
+
     console.log(`\n========================================`);
     console.log(`📊 TEST SUMMARY: ${passed} Passed, ${failed} Failed`);
     console.log(`========================================\n`);
@@ -303,6 +359,10 @@ async function runTests() {
     console.error('Fatal Test Suite Error:', err);
     failed++;
   } finally {
+    if (!isUsingMemoryStore() && mongoose.connection.readyState === 1) {
+      await mongoose.connection.dropDatabase().catch(() => {});
+      await mongoose.disconnect().catch(() => {});
+    }
     if (server) server.close();
     process.exit(failed > 0 ? 1 : 0);
   }

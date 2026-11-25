@@ -179,12 +179,12 @@ a:hover {
 }
 
 .badge-pending { background-color: #fef3c7; color: #92400e; }
-.badge-confirmed { background-color: #e0f2fe; color: #0369a1; }
-.badge-scheduled { background-color: #ede9fe; color: #6d28d9; }
+.badge-confirmed, .badge-bookingconfirmed { background-color: #e0f2fe; color: #0369a1; }
+.badge-scheduled, .badge-pickupscheduled { background-color: #ede9fe; color: #6d28d9; }
 .badge-pickedup { background-color: #fce7f3; color: #9d174d; }
 .badge-washing { background-color: #ccfbf1; color: #115e59; }
 .badge-ironing { background-color: #ffedd5; color: #9a3412; }
-.badge-ready { background-color: #dbeafe; color: #1e40af; }
+.badge-ready, .badge-readyfordelivery { background-color: #dbeafe; color: #1e40af; }
 .badge-outfordelivery { background-color: #fef08a; color: #854d0e; }
 .badge-delivered { background-color: #d1fae5; color: #065f46; }
 .badge-cancelled { background-color: #fee2e2; color: #991b1b; }

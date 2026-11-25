@@ -239,8 +239,7 @@ async function createOrderRecord(orderInput) {
     source = 'online'
   } = orderInput;
 
-  const customerSnapshot = {
-    _id: new mongoose.Types.ObjectId().toString(),
+  const customerFields = {
     name: name.trim(),
     phone: phone.trim(),
     whatsappNumber: (whatsappNumber || phone).trim(),
@@ -248,9 +247,10 @@ async function createOrderRecord(orderInput) {
     address: address.trim(),
     area: area ? area.trim() : '',
     city: city ? city.trim() : 'Mumbai',
-    pincode: pincode.trim(),
-    createdAt: new Date()
+    pincode: pincode.trim()
   };
+
+  const fallbackCustomerId = new mongoose.Types.ObjectId();
 
   // Authoritative backend pricing calculation
   const quote = await calculateOrderQuote({ items, deliveryPreference, couponCode });
@@ -258,10 +258,9 @@ async function createOrderRecord(orderInput) {
   const deliveryDate = calculateDeliveryDate(pickupDate, quote.deliveryPreference);
 
   const newOrderData = {
-    _id: new mongoose.Types.ObjectId().toString(),
     orderId,
-    customer: customerSnapshot._id,
-    customerSnapshot,
+    customer: fallbackCustomerId,
+    customerSnapshot: customerFields,
     items: quote.items,
     pickupDate,
     pickupTimeSlot,
@@ -283,28 +282,39 @@ async function createOrderRecord(orderInput) {
           ? 'Booking placed via Customer AI Assistant'
           : 'Booking placed online by customer'
       }
-    ],
-    createdAt: new Date(),
-    updatedAt: new Date()
+    ]
   };
 
   let savedOrder;
   if (!isUsingMemoryStore()) {
     try {
-      await Customer.findOneAndUpdate(
-        { phone: customerSnapshot.phone },
-        customerSnapshot,
-        { upsert: true, new: true }
+      const customerDoc = await Customer.findOneAndUpdate(
+        { phone: customerFields.phone },
+        { $set: customerFields },
+        { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true }
       );
+      if (customerDoc && customerDoc._id) {
+        newOrderData.customer = customerDoc._id;
+      }
       savedOrder = await Order.create(newOrderData);
     } catch (dbErr) {
       console.warn('DB write fallback to memory:', dbErr.message);
-      savedOrder = newOrderData;
+      savedOrder = {
+        _id: new mongoose.Types.ObjectId().toString(),
+        ...newOrderData,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
       memoryStore.orders.unshift(savedOrder);
     }
   } else {
-    savedOrder = newOrderData;
-    memoryStore.customers.push(customerSnapshot);
+    savedOrder = {
+      _id: new mongoose.Types.ObjectId().toString(),
+      ...newOrderData,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    memoryStore.customers.push({ _id: fallbackCustomerId.toString(), ...customerFields, createdAt: new Date() });
     memoryStore.orders.unshift(savedOrder);
   }
 

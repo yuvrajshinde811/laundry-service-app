@@ -17,17 +17,40 @@ const VALID_ORDER_STATUSES = [
 ];
 
 /**
- * Retrieve all orders from MongoDB or in-memory store
+ * Merge MongoDB orders and any in-memory fallback orders without duplicates
+ */
+function mergeAndSortOrders(dbOrders = [], memOrders = []) {
+  const byOrderId = new Map();
+
+  (dbOrders || []).forEach((o) => {
+    if (o && o.orderId) byOrderId.set(o.orderId, o);
+  });
+
+  (memOrders || []).forEach((o) => {
+    if (o && o.orderId && !byOrderId.has(o.orderId)) {
+      byOrderId.set(o.orderId, o);
+    }
+  });
+
+  return Array.from(byOrderId.values()).sort(
+    (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+  );
+}
+
+/**
+ * Retrieve ALL orders from MongoDB (plus any fallback memory orders), regardless of status
  */
 async function fetchAllOrders() {
+  let dbOrders = [];
   if (!isUsingMemoryStore()) {
     try {
-      return await Order.find({}).sort({ createdAt: -1 });
+      dbOrders = await Order.find({}).sort({ createdAt: -1 });
     } catch (e) {
-      return memoryStore.orders;
+      console.warn('MongoDB fetchAllOrders fallback to memoryStore:', e.message);
+      dbOrders = [];
     }
   }
-  return memoryStore.orders;
+  return mergeAndSortOrders(dbOrders, memoryStore.orders);
 }
 
 /**
@@ -43,13 +66,16 @@ async function findOrderByAnyId(id) {
         order = await Order.findOne({ orderId: cleanId.toUpperCase() });
       } else {
         order = await Order.findById(cleanId);
+        if (!order) {
+          order = await Order.collection.findOne({ _id: cleanId });
+        }
       }
     } catch (e) {}
   }
 
   if (!order) {
     order = memoryStore.orders.find(
-      (o) => o.orderId === cleanId.toUpperCase() || o._id === cleanId
+      (o) => o.orderId === cleanId.toUpperCase() || String(o._id) === cleanId
     );
   }
   return order;
@@ -390,7 +416,8 @@ async function computeBusinessAnalytics() {
 }
 
 /**
- * Get all orders with search, filter, and pagination
+ * Get all orders with optional search, filter, and pagination
+ * By default returns ALL orders regardless of status unless limit > 0 is explicitly requested.
  * GET /api/admin/orders
  */
 const getAllOrders = async (req, res, next) => {
@@ -400,57 +427,44 @@ const getAllOrders = async (req, res, next) => {
       search,
       date,
       page = 1,
-      limit = 25
+      limit = 'all'
     } = req.query;
 
-    const pageNum = parseInt(page, 10) || 1;
-    const limitNum = parseInt(limit, 10) || 25;
+    const allOrdersList = await fetchAllOrders();
 
-    let allOrdersList = [];
-
-    if (!isUsingMemoryStore()) {
-      try {
-        const query = {};
-        if (status && status !== 'All') query.status = status;
-        if (date) query.pickupDate = date;
-        if (search && search.trim() !== '') {
-          const searchRegex = new RegExp(search.trim(), 'i');
-          query.$or = [
-            { orderId: searchRegex },
-            { 'customerSnapshot.name': searchRegex },
-            { 'customerSnapshot.phone': searchRegex }
-          ];
-        }
-        allOrdersList = await Order.find(query).sort({ createdAt: -1 });
-      } catch (e) {
-        allOrdersList = memoryStore.orders;
-      }
-    } else {
-      allOrdersList = memoryStore.orders;
-    }
-
-    // Apply in-memory filtering if memory fallback
+    // Filter cleanly in one place across both MongoDB and memory fallback records
     let filtered = [...allOrdersList];
-    if (status && status !== 'All') {
-      filtered = filtered.filter((o) => o.status === status);
+
+    if (status && String(status).trim() !== '' && String(status).trim().toLowerCase() !== 'all') {
+      const targetStatus = String(status).trim().toLowerCase();
+      filtered = filtered.filter((o) => String(o.status || '').toLowerCase() === targetStatus);
     }
-    if (date) {
-      filtered = filtered.filter((o) => o.pickupDate === date);
+
+    if (date && String(date).trim() !== '') {
+      const targetDate = String(date).trim();
+      filtered = filtered.filter((o) => o.pickupDate === targetDate);
     }
-    if (search && search.trim()) {
-      const q = search.trim().toLowerCase();
+
+    if (search && String(search).trim() !== '') {
+      const q = String(search).trim().toLowerCase();
       filtered = filtered.filter(
         (o) =>
-          o.orderId.toLowerCase().includes(q) ||
-          (o.customerSnapshot?.name || '').toLowerCase().includes(q) ||
-          (o.customerSnapshot?.phone || '').includes(q)
+          String(o.orderId || '').toLowerCase().includes(q) ||
+          String(o.customerSnapshot?.name || '').toLowerCase().includes(q) ||
+          String(o.customerSnapshot?.phone || '').toLowerCase().includes(q) ||
+          String(o.customerSnapshot?.whatsappNumber || '').toLowerCase().includes(q) ||
+          String(o.customerSnapshot?.city || '').toLowerCase().includes(q)
       );
     }
 
     const totalOrders = filtered.length;
-    const totalPages = Math.ceil(totalOrders / limitNum) || 1;
-    const skip = (pageNum - 1) * limitNum;
-    const paginatedOrders = filtered.slice(skip, skip + limitNum);
+    const rawLimit = String(limit || 'all').trim().toLowerCase();
+    const shouldReturnAll = rawLimit === 'all' || rawLimit === '0' || rawLimit === '';
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = shouldReturnAll ? Math.max(totalOrders, 1) : Math.max(1, parseInt(rawLimit, 10) || totalOrders);
+    const totalPages = shouldReturnAll ? 1 : (Math.ceil(totalOrders / limitNum) || 1);
+    const skip = shouldReturnAll ? 0 : (pageNum - 1) * limitNum;
+    const paginatedOrders = shouldReturnAll ? filtered : filtered.slice(skip, skip + limitNum);
 
     res.status(200).json({
       success: true,
@@ -458,8 +472,8 @@ const getAllOrders = async (req, res, next) => {
       pagination: {
         totalOrders,
         totalPages,
-        currentPage: pageNum,
-        limit: limitNum
+        currentPage: shouldReturnAll ? 1 : pageNum,
+        limit: shouldReturnAll ? totalOrders : limitNum
       }
     });
   } catch (error) {
@@ -474,21 +488,7 @@ const getAllOrders = async (req, res, next) => {
 const getOrderDetails = async (req, res, next) => {
   try {
     const { id } = req.params;
-    let order;
-
-    if (!isUsingMemoryStore()) {
-      try {
-        if (id.startsWith('LAUNDRY-')) {
-          order = await Order.findOne({ orderId: id });
-        } else {
-          order = await Order.findById(id);
-        }
-      } catch (e) {}
-    }
-
-    if (!order) {
-      order = memoryStore.orders.find((o) => o.orderId === id || o._id === id);
-    }
+    const order = await findOrderByAnyId(id);
 
     if (!order) {
       return res.status(404).json({

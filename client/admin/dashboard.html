@@ -233,7 +233,8 @@
       <!-- Filter Bar Header -->
       <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div class="d-flex align-items-center gap-2 flex-wrap">
-          <h5 class="mb-0 fw-bold text-secondary me-2">Customer Bookings</h5>
+          <h5 class="mb-0 fw-bold text-secondary me-1">Customer Bookings</h5>
+          <span class="badge bg-primary-subtle text-primary rounded-pill" id="admin-orders-count">0 orders</span>
           <button class="btn btn-sm btn-outline-primary" onclick="loadDashboardData()">
             <i class="bi bi-arrow-clockwise me-1"></i> Refresh
           </button>
@@ -248,6 +249,11 @@
 
           <!-- Date Filter -->
           <input type="date" id="admin-date-filter" class="form-control form-control-sm" style="max-width: 160px;" title="Filter by Pickup Date">
+
+          <!-- Clear Filters -->
+          <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearAdminFilters()" title="Reset all filters">
+            Clear
+          </button>
         </div>
       </div>
 
