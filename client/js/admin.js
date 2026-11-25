@@ -53,6 +53,9 @@ function setupEventListeners() {
 // Fetch dashboard KPIs and initial orders
 async function loadDashboardData() {
   await Promise.all([loadStats(), loadOrders()]);
+  if (typeof window.loadAdminInsights === 'function') {
+    window.loadAdminInsights();
+  }
 }
 
 // Fetch Admin KPI metrics
@@ -78,7 +81,8 @@ async function loadStats() {
       document.getElementById('stat-ready-orders').textContent = s.readyOrders || 0;
       document.getElementById('stat-completed-orders').textContent = s.completedOrders || 0;
       document.getElementById('stat-today-revenue').textContent = `₹${s.todayRevenue || 0}`;
-      document.getElementById('stat-total-revenue').textContent = `₹${s.totalRevenue || 0}`;
+      const totalRevEl = document.getElementById('stat-total-revenue');
+      if (totalRevEl) totalRevEl.textContent = `₹${s.totalRevenue || 0}`;
     }
   } catch (err) {
     console.error('Failed to load admin stats:', err);

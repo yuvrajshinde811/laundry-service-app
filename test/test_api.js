@@ -182,6 +182,119 @@ async function runTests() {
     });
     assert(trackingUpdated.data.order.status === 'Picked Up', 'Customer tracking immediately reflects updated status "Picked Up"');
 
+    // 9. AI Status & Customer Chatbot Validation/Fallback
+    console.log('\nTest Suite 9: Customer AI Chatbot & Fallback');
+    const aiStatus = await makeRequest('GET', '/api/ai/status');
+    assert(aiStatus.status === 200 && aiStatus.data.success, 'GET /api/ai/status returns 200 without leaking secrets');
+    assert(!JSON.stringify(aiStatus.data).includes('sk-'), 'AI status response contains no API keys');
+
+    const emptyChat = await makeRequest('POST', '/api/ai/chat', { message: '   ' });
+    assert(emptyChat.status === 400 && !emptyChat.data.success, 'Rejects empty AI chat message with 400');
+
+    const chatResp = await makeRequest('POST', '/api/ai/chat', { message: 'What laundry services do you offer?' });
+    assert(chatResp.status === 200 && chatResp.data.success && Boolean(chatResp.data.reply), 'POST /api/ai/chat returns valid response or safe fallback');
+    assert(Boolean(chatResp.data.sessionId), 'Creates isolated session ID for customer conversation');
+
+    const clearResp = await makeRequest('POST', '/api/ai/chat/clear', { sessionId: chatResp.data.sessionId });
+    assert(clearResp.status === 200 && clearResp.data.success, 'POST /api/ai/chat/clear resets customer session');
+
+    // 10. AI Conversational Booking Assistant
+    console.log('\nTest Suite 10: AI Conversational Booking Assistant');
+    const draftTurn1 = await makeRequest('POST', '/api/ai/booking-assistant', {
+      updates: {
+        name: 'Aarav Patel',
+        items: [{ item: 'Shirt', quantity: 5, service: 'Washing' }]
+      },
+      confirm: false
+    });
+    assert(draftTurn1.status === 200 && draftTurn1.data.confirmed === false, 'Turn 1 saves partial booking draft without confirming');
+    assert(draftTurn1.data.quote && draftTurn1.data.quote.subtotal === 125, `Calculates Shirt x 5 Washing subtotal accurately: ₹${draftTurn1.data.quote?.subtotal}`);
+    const aiBookingSession = draftTurn1.data.sessionId;
+
+    const draftTurn2 = await makeRequest('POST', '/api/ai/booking-assistant', {
+      sessionId: aiBookingSession,
+      updates: {
+        defaultService: 'Washing + Ironing'
+      },
+      confirm: false
+    });
+    assert(draftTurn2.status === 200 && draftTurn2.data.quote.subtotal === 175, `Remembers items and updates to Washing + Ironing: ₹${draftTurn2.data.quote?.subtotal}`);
+
+    const invalidConfirm = await makeRequest('POST', '/api/ai/booking-assistant', {
+      sessionId: aiBookingSession,
+      updates: { phone: '123' },
+      confirm: true
+    });
+    assert(invalidConfirm.status === 400 && !invalidConfirm.data.confirmed, 'Rejects AI booking confirmation when required fields are invalid/missing');
+
+    const validConfirm = await makeRequest('POST', '/api/ai/booking-assistant', {
+      sessionId: aiBookingSession,
+      updates: {
+        phone: '9988776655',
+        whatsappNumber: '9988776655',
+        address: '22 Marine Drive',
+        city: 'Mumbai',
+        pincode: '400020',
+        pickupDate: '2026-11-26',
+        pickupTimeSlot: '2:00 PM – 4:00 PM',
+        deliveryPreference: 'Express'
+      },
+      confirm: true
+    });
+    assert(validConfirm.status === 201 && validConfirm.data.confirmed === true, 'Completes AI booking through existing order pipeline with 201 Created');
+    assert(validConfirm.data.orderId.startsWith('LAUNDRY-'), `AI booking generated Order ID: ${validConfirm.data.orderId}`);
+    assert(validConfirm.data.order.expressCharge === 100, 'Applies ₹100 Express delivery charge accurately');
+
+    // 11. AI Order Tracking & Customer Isolation
+    console.log('\nTest Suite 11: AI Order Tracking & Isolation');
+    const aiTrackOk = await makeRequest('POST', '/api/ai/track-order', {
+      orderId: validConfirm.data.orderId,
+      phone: '9988776655'
+    });
+    assert(aiTrackOk.status === 200 && aiTrackOk.data.order.status === 'Booking Confirmed', 'AI tracking retrieves verified customer order');
+
+    const aiTrackDenied = await makeRequest('POST', '/api/ai/track-order', {
+      orderId: validConfirm.data.orderId,
+      phone: '9111111111'
+    });
+    assert(aiTrackDenied.status === 401 && !aiTrackDenied.data.success, 'Rejects AI tracking with mismatched phone number');
+
+    // 12. Admin AI Authorization & Business Insights
+    console.log('\nTest Suite 12: Admin AI Security & Analytics');
+    const unauthSummary = await makeRequest('GET', '/api/admin/ai/business-summary');
+    assert(unauthSummary.status === 401, 'Blocks unauthorized access to /api/admin/ai/business-summary');
+
+    const unauthAdminChat = await makeRequest('POST', '/api/admin/ai/chat', { message: 'Today revenue?' });
+    assert(unauthAdminChat.status === 401, 'Blocks unauthorized access to /api/admin/ai/chat');
+
+    const adminSummary = await makeRequest('GET', '/api/admin/ai/business-summary', null, {
+      Authorization: `Bearer ${adminToken}`
+    });
+    assert(adminSummary.status === 200 && adminSummary.data.success, 'GET /api/admin/ai/business-summary succeeds with admin JWT');
+    assert(adminSummary.data.summary.overview.totalOrders >= 2, `Analytics reflects real total orders: ${adminSummary.data.summary.overview.totalOrders}`);
+    assert(Array.isArray(adminSummary.data.summary.popularServices) && adminSummary.data.summary.popularServices.length > 0, 'Computes popular services from real orders');
+
+    const revInsights = await makeRequest('GET', '/api/admin/ai/revenue-insights', null, {
+      Authorization: `Bearer ${adminToken}`
+    });
+    assert(revInsights.status === 200 && revInsights.data.insights.totalRevenue > 0, `Revenue insights calculated: ₹${revInsights.data.insights?.totalRevenue}`);
+    assert(Array.isArray(revInsights.data.insights.dailyTrend) && revInsights.data.insights.dailyTrend.length === 7, 'Provides 7-day daily revenue trend for dashboard charts');
+
+    const adminChatResp = await makeRequest('POST', '/api/admin/ai/chat', {
+      message: 'What is today revenue?'
+    }, {
+      Authorization: `Bearer ${adminToken}`
+    });
+    assert(adminChatResp.status === 200 && adminChatResp.data.success && Boolean(adminChatResp.data.reply), 'POST /api/admin/ai/chat responds cleanly with admin JWT');
+
+    const emptyActionConfirm = await makeRequest('POST', '/api/admin/ai/confirm-action', {
+      sessionId: adminChatResp.data.sessionId,
+      confirm: true
+    }, {
+      Authorization: `Bearer ${adminToken}`
+    });
+    assert(emptyActionConfirm.status === 400, 'Rejects confirm-action when no pending modification exists');
+
     console.log(`\n========================================`);
     console.log(`📊 TEST SUMMARY: ${passed} Passed, ${failed} Failed`);
     console.log(`========================================\n`);

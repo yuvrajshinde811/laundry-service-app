@@ -1,5 +1,5 @@
-require('dotenv').config();
 const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -11,6 +11,8 @@ const authRoutes = require('./routes/authRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
+const chatbotRoutes = require('./routes/chatbotRoutes');
+const adminAIRoutes = require('./routes/adminAIRoutes');
 const { notFoundHandler, errorHandler } = require('./middleware/errorMiddleware');
 
 const app = express();
@@ -65,6 +67,8 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/services', serviceRoutes);
+app.use('/api/ai', chatbotRoutes);
+app.use('/api/admin/ai', adminAIRoutes);
 app.use('/api/admin', adminRoutes);
 
 // 8. HTML Page Routes (Friendly Clean URLs)

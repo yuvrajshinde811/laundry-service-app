@@ -7,7 +7,7 @@
     "start": "node server/server.js",
     "dev": "nodemon server/server.js",
     "seed": "node server/scripts/seed.js",
-    "test": "node test/test_api.js"
+    "test": "node test/test_api.js && node test/test_ai_tools.js"
   },
   "keywords": [
     "laundry",
